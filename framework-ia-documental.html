@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Framework de trabajo con IA — Documental</title>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --border: #e4e4e0;
+      --accent: #2563eb;
+      --info-bg: #eff6ff;
+      --info-border: #bfdbfe;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --ok-bg: #ecfdf5;
+      --ok-border: #a7f3d0;
+      --code-bg: #f3f4f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      line-height: 1.55;
+      font-size: 16px;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--info-bg);
+      border: 1px solid var(--info-border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 28px;
+      line-height: 1.2;
+      margin: 0 0 8px;
+      font-weight: 700;
+    }
+    h2 {
+      font-size: 20px;
+      margin: 0 0 10px;
+      font-weight: 650;
+    }
+    h3 {
+      font-size: 15px;
+      margin: 0 0 8px;
+      font-weight: 650;
+      color: var(--muted);
+    }
+    .lead {
+      color: var(--muted);
+      margin: 0 0 24px;
+      font-size: 17px;
+    }
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 28px;
+    }
+    .toc ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+    }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .toc a:hover { text-decoration: underline; }
+    .chapter {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 22px 18px;
+      margin-bottom: 16px;
+    }
+    .step {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    p { margin: 0 0 12px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 4px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--code-bg);
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: #fafafa; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .stat, .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafafa;
+    }
+    .stat strong {
+      display: block;
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+    .stat span, .card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0;
+    }
+    .card h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+    .callout {
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0 0;
+      font-size: 14px;
+      border: 1px solid;
+    }
+    .callout.info { background: var(--info-bg); border-color: var(--info-border); }
+    .callout.warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .callout.ok { background: var(--ok-bg); border-color: var(--ok-border); }
+    .callout strong { display: block; margin-bottom: 4px; }
+    pre, code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    code.inline {
+      background: var(--code-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .footer a { color: var(--accent); }
+    @media (max-width: 640px) {
+      .grid, .grid-2 { grid-template-columns: 1fr; }
+      h1 { font-size: 24px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .chapter, .toc { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="badge">Documental</div>
+    <h1>Framework de trabajo con IA</h1>
+    <p class="lead">
+      Guía paso a paso: RAG, bases vectoriales, AGENTS.md, rules, skills, hooks, MCP y BDK —
+      cómo encajan y en qué orden adoptarlos.
+    </p>
+
+    <nav class="toc" aria-label="Índice">
+      <h3>Índice</h3>
+      <ol>
+        <li><a href="#mapa">Mapa del framework</a></li>
+        <li><a href="#contexto">El problema del contexto</a></li>
+        <li><a href="#rag">RAG</a></li>
+        <li><a href="#vectores">Base vectorial</a></li>
+        <li><a href="#agents">AGENTS.md</a></li>
+        <li><a href="#rules">Rules</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#hooks">Hooks y subagentes</a></li>
+        <li><a href="#mcp">MCP</a></li>
+        <li><a href="#bdk">BDK</a></li>
+        <li><a href="#ruta">Ruta de adopción + glosario</a></li>
+      </ol>
+    </nav>
+
+    <section class="chapter" id="mapa">
+      <span class="step">Paso 0</span>
+      <h2>Mapa del framework</h2>
+      <p>
+        Un agente de IA no es solo un modelo: combina instrucciones, recuperación de
+        conocimiento, tools y controles de seguridad. Cursor organiza esas capas en cada turno.
+      </p>
+      <div class="grid">
+        <div class="stat"><strong>Estático</strong><span>Rules + AGENTS.md</span></div>
+        <div class="stat"><strong>Dinámico</strong><span>Skills + RAG + MCP</span></div>
+        <div class="stat"><strong>Control</strong><span>Hooks + Subagentes</span></div>
+      </div>
+      <div class="callout info">
+        <strong>Analogía de onboarding</strong>
+        Rules / AGENTS.md = día 1. Skills = manuales bajo demanda. Hooks = políticas.
+        MCP = sistemas externos.
+      </div>
+      <p class="muted" style="margin-top:12px">
+        Flujo: Usuario ? Agente (+ rules) ? Skills ? RAG/vectores ? MCP ? Hooks ? Respuesta o acción.
+      </p>
+    </section>
+
+    <section class="chapter" id="contexto">
+      <span class="step">Paso 1</span>
+      <h2>El problema del contexto</h2>
+      <p>
+        El LLM no conoce tu negocio ni datos privados, y la ventana de tokens es finita:
+        no cabe todo el conocimiento en cada prompt.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Límite</th><th>Mitigación</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Entrenamiento desactualizado</td><td>RAG + docs vivos</td></tr>
+          <tr><td>Datos privados</td><td>Indexación / MCP</td></tr>
+          <tr><td>Ventana de tokens</td><td>Recuperación + skills</td></tr>
+          <tr><td>Convenciones del equipo</td><td>Rules / AGENTS.md</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <strong>Regla de oro</strong>
+        Separa siempre-on (rules) de bajo demanda (skills, RAG, MCP). Ahorra tokens y reduce ruido.
+      </div>
+    </section>
+
+    <section class="chapter" id="rag">
+      <span class="step">Paso 2</span>
+      <h2>RAG (Retrieval Augmented Generation)</h2>
+      <p>
+        RAG recupera pasajes relevantes de un corpus externo y los inyecta en el prompt
+        antes de generar. Así el modelo responde con evidencia, no solo con memoria de entrenamiento.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Paso</th><th>Detalle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Indexar</td><td>Documentos ? chunks ? embeddings</td></tr>
+          <tr><td>Consultar</td><td>La pregunta se convierte en vector</td></tr>
+          <tr><td>Recuperar</td><td>Top-K vecinos por similitud</td></tr>
+          <tr><td>Aumentar</td><td>Chunks + prompt al LLM</td></tr>
+          <tr><td>Generar</td><td>Respuesta anclada a evidencia</td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2">
+        <div class="card">
+          <h4>RAG fijo</h4>
+          <p>Pipeline fijo. Ideal para Q&amp;A sobre un corpus estable.</p>
+        </div>
+        <div class="card">
+          <h4>RAG agentic</h4>
+          <p>El agente decide cuándo/cómo buscar e itera. Ideal multi-paso.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter" id="vectores">
+      <span class="step">Paso 3</span>
+      <h2>Base vectorial</h2>
+      <p>
+        Guarda embeddings (vectores numéricos) y busca por similitud semántica,
+        no por keyword exacto.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <h4>Chunking</h4>
+          <p>Partir documentos con tamaño y solape adecuados.</p>
+        </div>
+        <div class="card">
+          <h4>Embedding</h4>
+          <p>Texto ? vector; significados cercanos quedan cerca.</p>
+        </div>
+        <div class="card">
+          <h4>Índice ANN</h4>
+          <p>HNSW: vecinos aproximados a escala con baja latencia.</p>
+        </div>
+      </div>
+      <p class="muted">
+        Ejemplos: Pinecone, Qdrant, Weaviate, Chroma, pgvector, FAISS, OpenSearch k-NN.
+      </p>
+    </section>
+
+    <section class="chapter" id="agents">
+      <span class="step">Paso 4</span>
+      <h2>AGENTS.md</h2>
+      <p>
+        Markdown en la raíz o subdirectorios con instrucciones del proyecto.
+        Anidable: las más específicas tienen prioridad.
+      </p>
+      <pre># Project Instructions
+## Style
+- TypeScript
+## Architecture
+- Repository pattern</pre>
+      <div class="callout ok">
+        <strong>Cuándo usarlo</strong>
+        Ideal para instrucciones claras sin el overhead de rules con frontmatter.
+      </div>
+    </section>
+
+    <section class="chapter" id="rules">
+      <span class="step">Paso 5</span>
+      <h2>Rules</h2>
+      <p>
+        Archivos en <code class="inline">.cursor/rules/</code>: contexto always-on.
+        Cortas, con punteros a ejemplos, comandos de build/test y guardrails.
+      </p>
+      <div class="callout warn">
+        <strong>Costo de contexto</strong>
+        Si solo aplica a veces, usa un skill. No copies style guides enteros (usa linter).
+      </div>
+    </section>
+
+    <section class="chapter" id="skills">
+      <span class="step">Paso 6</span>
+      <h2>Skills</h2>
+      <p>
+        Paquete portable con <code class="inline">SKILL.md</code> (+ scripts/references).
+        Se carga bajo demanda o se invoca con <code class="inline">/</code>.
+      </p>
+      <table>
+        <thead>
+          <tr><th></th><th>Rules</th><th>Skills</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Carga</td><td>Siempre / por glob</td><td>Solo si relevante</td></tr>
+          <tr><td>Uso</td><td>Convenciones</td><td>Workflows</td></tr>
+          <tr><td>Costo</td><td>Constante</td><td>Al invocarse</td></tr>
+        </tbody>
+      </table>
+      <pre>---
+name: deploy-app
+description: Deploy a staging/prod
+paths:
+  - "apps/web/**"
+---</pre>
+      <p class="muted">
+        Ubicaciones: <code class="inline">.cursor/skills/</code>,
+        <code class="inline">.agents/skills/</code>,
+        <code class="inline">~/.cursor/skills/</code>,
+        <code class="inline">bot/skills/</code> (BDK).
+      </p>
+    </section>
+
+    <section class="chapter" id="hooks">
+      <span class="step">Paso 7</span>
+      <h2>Hooks y subagentes</h2>
+      <p>
+        <strong>Hooks:</strong> scripts en el ciclo de vida (observar o bloquear) —
+        formatters, secretos, gates de shell/SQL.
+        <strong>Subagentes:</strong> contexto aislado para exploración, revisión o verificación.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Pieza</th><th>Rol</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Hooks Agent</td><td>preToolUse, beforeShellExecution, stop</td></tr>
+          <tr><td>Hooks Tab</td><td>beforeTabFileRead, afterTabFileEdit</td></tr>
+          <tr><td>Subagentes</td><td>Delegación con contexto propio</td></tr>
+        </tbody>
+      </table>
+      <div class="callout info">
+        <strong>BDK</strong>
+        <code class="inline">bot/hooks/*.ts</code> son observe-only. Las decisiones viven en tools.
+      </div>
+    </section>
+
+    <section class="chapter" id="mcp">
+      <span class="step">Paso 8</span>
+      <h2>MCP (Model Context Protocol)</h2>
+      <p>
+        Conecta tools y datos externos (Slack, Datadog, Sentry, bases de datos, Figma).
+        También puedes usar CLIs (<code class="inline">gh</code>, <code class="inline">aws</code>,
+        <code class="inline">kubectl</code>) documentados en rules.
+      </p>
+      <div class="callout info">
+        <strong>RAG + MCP</strong>
+        RAG = corpus indexado. MCP = sistemas vivos. Un agente maduro usa ambos.
+      </div>
+    </section>
+
+    <section class="chapter" id="bdk">
+      <span class="step">Paso 9</span>
+      <h2>BDK (Bot Development Kit)</h2>
+      <p>
+        Agentes como código: Markdown + TypeScript + evals en <code class="inline">bot/</code>,
+        con deploy managed o self-hosted.
+      </p>
+      <pre>bot/: agent.ts, instructions.md, tools/, skills/, hooks/, channels/
+evals/</pre>
+      <table>
+        <thead>
+          <tr><th>Opción</th><th>Cuándo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Automations</td><td>Job con prompt + trigger</td></tr>
+          <tr><td>Agent UI</td><td>Interactivo sin proyecto de software</td></tr>
+          <tr><td>BDK</td><td>Código, tests y deploy propios</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">
+        Invariantes: Node (no Bun), memoria durable en <code class="inline">ctx.host.kv</code>.
+      </p>
+    </section>
+
+    <section class="chapter" id="ruta">
+      <span class="step">Paso 10</span>
+      <h2>Ruta de adopción</h2>
+      <p>
+        1 AGENTS.md · 2 Rules cortas · 3 Skills · 4 MCP · 5 RAG/vectores · 6 Hooks · 7 BDK
+      </p>
+      <div class="callout ok">
+        <strong>Orden</strong>
+        Empieza mínimo. Solo añade capas cuando el agente falle de forma repetible.
+      </div>
+      <h3 style="margin-top:18px">Glosario</h3>
+      <table>
+        <thead>
+          <tr><th>Término</th><th>En una frase</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RAG</td><td>Recuperar evidencia y meterla en el prompt</td></tr>
+          <tr><td>Base vectorial</td><td>Índice de embeddings para búsqueda semántica</td></tr>
+          <tr><td>AGENTS.md</td><td>Instrucciones markdown del proyecto</td></tr>
+          <tr><td>Rules</td><td>Contexto always-on</td></tr>
+          <tr><td>Skills</td><td>Procedimientos bajo demanda</td></tr>
+          <tr><td>Hooks</td><td>Control del ciclo de vida</td></tr>
+          <tr><td>MCP</td><td>Tools y datos externos</td></tr>
+          <tr><td>Subagente</td><td>Agente hijo con contexto aislado</td></tr>
+          <tr><td>BDK</td><td>Agentes versionados como código</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="footer">
+      <p>
+        Destinatario sugerido: <strong>adelacus@bolivariano.com</strong><br />
+        Versión interactiva (canvas):
+        <a href="https://cursor.com/canvas/store-8f1df1e2-84dc-44af-8b66-a679d30a5c32/2b9d8ab9-9f85-4683-a0da-ba2bd0cebd8a">abrir en Cursor</a>
+      </p>
+      <p>
+        Fuentes: cursor.com/docs · cursor.com/learn · patrones RAG (IBM / AWS / Azure Architecture).
+      </p>
+    </div>
+  </div>
+</body>
+</html>
