@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marco de referencia — Trabajo con agentes LLM</title>
+  <style>
+    :root {
+      --bg: #f6f5f2;
+      --surface: #fff;
+      --text: #1c1917;
+      --muted: #57534e;
+      --border: #e7e5e4;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --warn-bg: #fff7ed;
+      --warn-border: #fed7aa;
+      --info-bg: #f0f9ff;
+      --info-border: #bae6fd;
+      --ok-bg: #f0fdf4;
+      --ok-border: #bbf7d0;
+      --code: #f5f5f4;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .wrap { max-width: 780px; margin: 0 auto; padding: 28px 18px 72px; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 5px 12px;
+      margin-bottom: 12px;
+    }
+    h1 { font-size: 1.85rem; line-height: 1.2; margin: 0 0 10px; }
+    h2 { font-size: 1.25rem; margin: 0 0 10px; }
+    h3 { font-size: .95rem; margin: 16px 0 8px; color: var(--muted); }
+    .lead { color: var(--muted); margin: 0 0 22px; font-size: 1.05rem; }
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+    }
+    .toc ol { margin: 8px 0 0; padding-left: 22px; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .chapter {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 20px 16px;
+      margin-bottom: 14px;
+    }
+    .step {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    p { margin: 0 0 12px; }
+    .muted { color: var(--muted); font-size: .92rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 4px;
+      font-size: .92rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: var(--code); font-weight: 650; }
+    tr:nth-child(even) td { background: #fafaf9; }
+    .callout {
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0 0;
+      font-size: .92rem;
+      border: 1px solid;
+    }
+    .callout strong { display: block; margin-bottom: 4px; }
+    .callout.info { background: var(--info-bg); border-color: var(--info-border); }
+    .callout.warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .callout.ok { background: var(--ok-bg); border-color: var(--ok-border); }
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fafaf9;
+    }
+    .card h4 { margin: 0 0 6px; font-size: .95rem; }
+    .card p { margin: 0; font-size: .88rem; color: var(--muted); }
+    pre, code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .85rem;
+    }
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      overflow-x: auto;
+      margin: 10px 0;
+      white-space: pre-wrap;
+    }
+    code.i {
+      background: var(--code);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: .88em;
+    }
+    .analogy {
+      border-left: 3px solid var(--accent);
+      padding: 8px 0 8px 14px;
+      margin: 12px 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .85rem;
+    }
+    @media (max-width: 640px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      h1 { font-size: 1.5rem; }
+    }
+    @media print {
+      body { background: #fff; }
+      .chapter, .toc { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="badge">Marco de referencia · Genérico</div>
+    <h1>Trabajo con agentes LLM</h1>
+    <p class="lead">
+      Guía para quien nunca ha usado inteligencia artificial.
+      Sirve igual si trabajas en Cursor, GitHub Copilot, Gemini, ChatGPT, Claude u otra herramienta similar.
+    </p>
+
+    <nav class="toc" aria-label="Índice">
+      <h3 style="margin-top:0">Índice</h3>
+      <ol>
+        <li><a href="#para-quien">Para quién es este marco</a></li>
+        <li><a href="#llm">Qué es un LLM</a></li>
+        <li><a href="#modelo">Qué es un modelo de LLM</a></li>
+        <li><a href="#aprende">Cómo “aprende” la IA</a></li>
+        <li><a href="#variabilidad">Por qué no da las mismas respuestas</a></li>
+        <li><a href="#ide">Qué es un IDE de trabajo con IA</a></li>
+        <li><a href="#agente">Qué es un agente</a></li>
+        <li><a href="#agents-md">AGENTS.md</a></li>
+        <li><a href="#memory-md">memory.md (memoria)</a></li>
+        <li><a href="#marco">Piezas del marco de referencia</a></li>
+        <li><a href="#primeros-pasos">Primeros pasos prácticos</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+      </ol>
+    </nav>
+
+    <!-- 0 -->
+    <section class="chapter" id="para-quien">
+      <span class="step">Capítulo 0</span>
+      <h2>Para quién es este marco</h2>
+      <p>
+        Este documento es un <strong>mapa mental compartido</strong>: las mismas ideas
+        aplican aunque cambies de producto. Lo que cambia es la interfaz (dónde escribes)
+        y el nombre comercial del modelo (GPT, Gemini, Claude, etc.).
+      </p>
+      <div class="grid-3">
+        <div class="card">
+          <h4>Chatbots</h4>
+          <p>ChatGPT, Gemini, Claude.ai — conversación en el navegador.</p>
+        </div>
+        <div class="card">
+          <h4>Asistentes en el editor</h4>
+          <p>Copilot, Cursor, Gemini Code Assist — IA dentro del código.</p>
+        </div>
+        <div class="card">
+          <h4>Agentes</h4>
+          <p>Sistemas que además de responder, usan herramientas y dan pasos.</p>
+        </div>
+      </div>
+      <div class="callout info">
+        <strong>Idea clave</strong>
+        No memorices marcas. Memoriza el <em>marco</em>: modelo + instrucciones + contexto +
+        herramientas + memoria.
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section class="chapter" id="llm">
+      <span class="step">Capítulo 1</span>
+      <h2>Qué es un LLM</h2>
+      <p>
+        <strong>LLM</strong> significa <em>Large Language Model</em> (modelo grande de lenguaje).
+        Es un programa entrenado para predecir y generar texto (y a veces código, imágenes o audio)
+        de forma coherente, a partir de lo que le escribes.
+      </p>
+      <div class="analogy">
+        Analogía: no es una base de datos que “busca la respuesta correcta”.
+        Es más parecido a un asistente muy leído que completa lo que parece más probable
+        según lo que ha visto en el entrenamiento y lo que le das ahora.
+      </div>
+      <p>Un LLM <strong>no</strong>:</p>
+      <ul>
+        <li>entiende el mundo como una persona (simula comprensión con patrones de lenguaje);</li>
+        <li>garantiza hechos al 100% (puede inventar con seguridad aparente);</li>
+        <li>recuerda automáticamente tu empresa o tu proyecto (salvo que se lo des o tenga memoria).</li>
+      </ul>
+      <p>Un LLM <strong>sí</strong>:</p>
+      <ul>
+        <li>explica, resume, traduce, redacta y propone código con rapidez;</li>
+        <li>sigue instrucciones si están claras;</li>
+        <li>mejora mucho cuando le das contexto bueno (archivos, reglas, ejemplos).</li>
+      </ul>
+    </section>
+
+    <!-- 2 -->
+    <section class="chapter" id="modelo">
+      <span class="step">Capítulo 2</span>
+      <h2>Qué es un modelo de LLM</h2>
+      <p>
+        El <strong>modelo</strong> es la versión concreta del cerebro estadístico:
+        por ejemplo GPT-4.1, Claude Sonnet, Gemini 2.5, Llama 3, etc.
+        La <strong>aplicación</strong> (Cursor, Copilot, Gemini) es la caja que lo usa.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Concepto</th><th>Ejemplo</th><th>Qué es</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Proveedor</td>
+            <td>OpenAI, Google, Anthropic, Meta</td>
+            <td>Quién entrena y hospeda el modelo</td>
+          </tr>
+          <tr>
+            <td>Modelo</td>
+            <td>GPT, Gemini, Claude, Llama</td>
+            <td>El “cerebro” con pesos fijos</td>
+          </tr>
+          <tr>
+            <td>Producto / IDE</td>
+            <td>Cursor, Copilot, Gemini en Chrome</td>
+            <td>La herramienta donde lo usas</td>
+          </tr>
+          <tr>
+            <td>Agente</td>
+            <td>Agent mode, Auto, Assistants</td>
+            <td>Modelo + herramientas + bucle de pasos</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <strong>Importante</strong>
+        Cambiar de modelo (más capaz / más barato / más rápido) cambia la calidad.
+        El marco (AGENTS.md, memoria, buenas preguntas) sigue siendo el mismo.
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="chapter" id="aprende">
+      <span class="step">Capítulo 3</span>
+      <h2>Cómo “aprende” la IA</h2>
+      <p>
+        En el día a día, el modelo que usas <strong>no está estudiando tu conversación
+        para reentrenarse al instante</strong> como un alumno. Hay tres capas distintas:
+      </p>
+      <h3>1. Entrenamiento (antes de que tú lo uses)</h3>
+      <p>
+        Con millones de textos e instrucciones, los ingenieros ajustan miles de millones
+        de parámetros numéricos (“pesos”). Eso define el conocimiento general del modelo.
+        Ese paso es costoso y ocurre fuera de tu chat.
+      </p>
+      <h3>2. Contexto de la conversación (lo que ve ahora)</h3>
+      <p>
+        Todo lo que le escribes, los archivos que le adjuntas y las reglas del proyecto
+        entran en una <strong>ventana de contexto</strong> (memoria de corto plazo limitada).
+        Ahí “aprende” tu caso… pero solo mientras quepa en esa ventana.
+      </p>
+      <h3>3. Memoria / archivos del proyecto (lo que tú persistís)</h3>
+      <p>
+        Si guardas convenciones en <code class="i">AGENTS.md</code>, <code class="i">memory.md</code>,
+        rules o skills, el agente las puede volver a cargar en sesiones futuras.
+        Esa es la forma práctica de que “recuerde” cómo trabaja tu equipo.
+      </p>
+      <div class="analogy">
+        Analogía escolar: el entrenamiento es la carrera universitaria;
+        el chat es el examen abierto con los apuntes que le pasas hoy;
+        AGENTS.md / memory.md son la carpeta de apuntes del equipo que se reabre cada clase.
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="chapter" id="variabilidad">
+      <span class="step">Capítulo 4</span>
+      <h2>Por qué no da las mismas respuestas</h2>
+      <p>
+        Si haces la misma pregunta dos veces, a menudo obtienes respuestas distintas.
+        No es un fallo raro: es cómo funcionan estos sistemas.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Causa</th><th>Explicación sencilla</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Aleatoriedad (temperatura)</td>
+            <td>El modelo elige entre varias palabras “buenas”, no siempre la misma.</td>
+          </tr>
+          <tr>
+            <td>Contexto distinto</td>
+            <td>Otro historial, otros archivos abiertos, otras reglas cargadas.</td>
+          </tr>
+          <tr>
+            <td>Modelo distinto</td>
+            <td>Cambiar de GPT a Gemini o de “rápido” a “pensante” cambia el estilo.</td>
+          </tr>
+          <tr>
+            <td>Ambigüedad de la pregunta</td>
+            <td>Si no especificas, el modelo asume; cada vez puede asumir distinto.</td>
+          </tr>
+          <tr>
+            <td>Herramientas</td>
+            <td>Si busca en la web o en el repo, los resultados pueden variar.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout ok">
+        <strong>Cómo estabilizar respuestas</strong>
+        Sé específico · da ejemplos · fija reglas en AGENTS.md · pide formato concreto ·
+        divide el problema · verifica hechos críticos tú o con tests.
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="chapter" id="ide">
+      <span class="step">Capítulo 5</span>
+      <h2>Qué es un IDE de trabajo con IA</h2>
+      <p>
+        Un <strong>IDE</strong> (Integrated Development Environment) es el entorno donde
+        escribes código: editor, terminal, git, depurador… Un <strong>IDE con IA</strong>
+        añade el modelo (o un agente) dentro de ese entorno.
+      </p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Chat solo</h4>
+          <p>Hablas con la IA; tú copias y pegas el resultado al proyecto.</p>
+        </div>
+        <div class="card">
+          <h4>IDE / agente</h4>
+          <p>La IA lee archivos, edita, ejecuta comandos y propone cambios en el repo.</p>
+        </div>
+      </div>
+      <p>Ejemplos (todos encajan en este marco):</p>
+      <ul>
+        <li><strong>Cursor</strong> — editor + agente con tools y rules/skills.</li>
+        <li><strong>GitHub Copilot</strong> — autocompletado y chat/agente en VS Code u otros.</li>
+        <li><strong>Gemini</strong> — chat y asistentes de código en productos Google.</li>
+        <li><strong>Otros</strong> — Windsurf, Continue, Claude Code, etc.</li>
+      </ul>
+      <div class="callout info">
+        <strong>Para el principiante</strong>
+        Empieza preguntando en lenguaje natural (“explica este archivo”).
+        Luego pide cambios pequeños. Después añade AGENTS.md para que no repita errores.
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="chapter" id="agente">
+      <span class="step">Capítulo 6</span>
+      <h2>Qué es un agente</h2>
+      <p>
+        Un <strong>agente</strong> es un LLM al que se le permite <em>hacer cosas en bucle</em>:
+        pensar ? usar una herramienta ? ver el resultado ? decidir el siguiente paso ? …
+        hasta completar (o fallar) la tarea.
+      </p>
+      <p>Herramientas típicas:</p>
+      <ul>
+        <li>leer / editar archivos;</li>
+        <li>buscar en el código;</li>
+        <li>ejecutar terminal o tests;</li>
+        <li>consultar APIs o sistemas externos (a veces vía MCP u otras integraciones).</li>
+      </ul>
+      <div class="analogy">
+        Analogía: el chatbot es un consultor que habla.
+        El agente es un pasante al que le das acceso al repo y le pides que haga el PR
+        (con supervisión tuya).
+      </div>
+      <div class="callout warn">
+        <strong>Seguridad</strong>
+        Un agente puede borrar archivos o ejecutar comandos. Empieza con tareas pequeñas,
+        revisa los cambios y no le des secretos en el chat.
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="chapter" id="agents-md">
+      <span class="step">Capítulo 7</span>
+      <h2>AGENTS.md</h2>
+      <p>
+        <code class="i">AGENTS.md</code> (o archivos equivalentes: rules, instrucciones del proyecto,
+        system prompt del bot) es un <strong>manual corto del proyecto para el agente</strong>.
+        Vive en el repositorio y se versiona con Git. Cualquier persona o herramienta
+        compatible puede leerlo.
+      </p>
+      <p>Qué poner (y qué no):</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Sí</h4>
+          <p>
+            Cómo construir/testear · estilo del repo · arquitectura · qué no tocar ·
+            enlaces a ejemplos canónicos.
+          </p>
+        </div>
+        <div class="card">
+          <h4>No</h4>
+          <p>
+            Manuales enormes · secretos · toda la wiki · reglas que solo aplican una vez
+            (eso va a un skill o a un prompt puntual).
+          </p>
+        </div>
+      </div>
+      <pre># AGENTS.md — ejemplo mínimo
+
+## Comandos
+- Instalar: npm install
+- Test: npm test
+- Build: npm run build
+
+## Estilo
+- TypeScript estricto
+- Preferir funciones pequeñas y nombres claros
+
+## Arquitectura
+- UI en /src/ui
+- Lógica de negocio en /src/domain
+- No editar /generated
+
+## Preferencias
+- Responder en español
+- Explicar cambios brevemente al final</pre>
+      <p class="muted">
+        En algunos productos se llaman “Project instructions”, “Custom instructions”,
+        “Rules” o “.github/copilot-instructions.md”. La idea es la misma: contexto always-on del equipo.
+      </p>
+      <div class="callout ok">
+        <strong>Anidamiento</strong>
+        Puedes tener un AGENTS.md global y otros en subcarpetas (frontend/, backend/).
+        Lo más específico suele ganar cuando trabajas en esa zona.
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="chapter" id="memory-md">
+      <span class="step">Capítulo 8</span>
+      <h2>memory.md — memoria del agente</h2>
+      <p>
+        Si AGENTS.md es el <em>manual del proyecto</em>, <code class="i">memory.md</code>
+        (o “Memory”, “notas de sesión”, “hechos recordados”) es el <strong>cuaderno vivo</strong>:
+        decisiones, preferencias y hallazgos que deben sobrevivir entre conversaciones.
+      </p>
+      <table>
+        <thead>
+          <tr><th></th><th>AGENTS.md</th><th>memory.md</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Naturaleza</td>
+            <td>Estable, de equipo</td>
+            <td>Evolutiva, de trabajo</td>
+          </tr>
+          <tr>
+            <td>Contenido</td>
+            <td>Cómo se trabaja aquí</td>
+            <td>Qué ya decidimos / aprendimos</td>
+          </tr>
+          <tr>
+            <td>Cambia</td>
+            <td>Poco (PRs conscientes)</td>
+            <td>A menudo (notas cortas)</td>
+          </tr>
+          <tr>
+            <td>Ejemplo</td>
+            <td>“Usamos Vitest, no Jest”</td>
+            <td>“El bug de login es por el timeout del API X”</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre># memory.md — ejemplo
+
+## Preferencias del usuario
+- Responder en español
+- Preferir cambios pequeños y revisables
+
+## Decisiones del proyecto
+- 2026-03-18: auth con JWT en cookie httpOnly
+- 2026-03-20: no usar Redis en staging (aún)
+
+## Lecciones / trampas
+- El servicio payments falla si falta header X-Tenant
+- No regenerar prisma sin revisar migrations
+
+## Estado actual
+- WIP: migración de checkout
+- Pendiente: tests e2e del carrito</pre>
+      <div class="callout info">
+        <strong>En la práctica</strong>
+        No todas las herramientas usan el nombre <code class="i">memory.md</code>.
+        Algunas tienen “Memory” en la UI, otras un archivo en el repo, otras un almacén
+        clave-valor del host. El principio es idéntico: <em>persistir lo que no debe olvidarse</em>.
+      </div>
+      <div class="callout warn">
+        <strong>Higiene de memoria</strong>
+        No guardes secretos ni datos personales. Borra notas obsoletas.
+        Si la memoria crece demasiado, resume y archiva.
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="chapter" id="marco">
+      <span class="step">Capítulo 9</span>
+      <h2>Piezas del marco de referencia</h2>
+      <p>
+        Independiente del producto, un sistema serio de trabajo con agentes suele tener
+        estas capas:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Capa</th><th>Pregunta que responde</th><th>Ejemplos de nombre</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Modelo</td>
+            <td>¿Qué cerebro uso?</td>
+            <td>GPT, Gemini, Claude, Llama</td>
+          </tr>
+          <tr>
+            <td>Instrucciones estáticas</td>
+            <td>¿Cómo trabajamos siempre?</td>
+            <td>AGENTS.md, rules, custom instructions</td>
+          </tr>
+          <tr>
+            <td>Memoria</td>
+            <td>¿Qué ya sabemos / decidimos?</td>
+            <td>memory.md, Memory UI, kv del host</td>
+          </tr>
+          <tr>
+            <td>Procedimientos</td>
+            <td>¿Cómo se hace X cuando hace falta?</td>
+            <td>skills, prompts guardados, playbooks</td>
+          </tr>
+          <tr>
+            <td>Herramientas</td>
+            <td>¿Qué puede hacer además de hablar?</td>
+            <td>editar archivos, terminal, MCP, APIs</td>
+          </tr>
+          <tr>
+            <td>Conocimiento externo</td>
+            <td>¿De dónde saca hechos del negocio?</td>
+            <td>RAG, búsqueda, docs, tickets</td>
+          </tr>
+          <tr>
+            <td>Control</td>
+            <td>¿Qué está permitido?</td>
+            <td>hooks, permisos, revisión humana</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="analogy">
+        Piensa en onboarding de un compañero nuevo:
+        AGENTS.md = manual del día 1 · memory.md = notas del equipo ·
+        skills = “cómo desplegar” · tools = laptop y accesos · RAG = biblioteca ·
+        hooks = políticas de seguridad.
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="chapter" id="primeros-pasos">
+      <span class="step">Capítulo 10</span>
+      <h2>Primeros pasos prácticos</h2>
+      <ol>
+        <li>
+          <strong>Elige una herramienta</strong> (chat o IDE) y un modelo “equilibrado”.
+        </li>
+        <li>
+          <strong>Haz una pregunta simple</strong> sobre un archivo tuyo: “explícame qué hace”.
+        </li>
+        <li>
+          <strong>Pide un cambio pequeño</strong> y revísalo línea por línea.
+        </li>
+        <li>
+          <strong>Crea AGENTS.md</strong> con 15–40 líneas: comandos, estilo, lo que no debe tocar.
+        </li>
+        <li>
+          <strong>Crea memory.md</strong> (o activa Memory) y anota 3 decisiones reales.
+        </li>
+        <li>
+          <strong>Repite una tarea</strong> (por ejemplo “abre un PR”) y conviértela en skill/prompt guardado.
+        </li>
+        <li>
+          <strong>Mide</strong>: si el agente falla igual 3 veces, añade una regla; no alargues el chat eterno.
+        </li>
+      </ol>
+      <div class="callout ok">
+        <strong>Prompt de principiante que funciona</strong>
+        “Contexto: … Objetivo: … Restricciones: … Formato de salida: … No inventes archivos que no existan.”
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="chapter" id="glosario">
+      <span class="step">Capítulo 11</span>
+      <h2>Glosario</h2>
+      <table>
+        <thead>
+          <tr><th>Término</th><th>Definición corta</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>LLM</td><td>Modelo grande de lenguaje que genera texto/código</td></tr>
+          <tr><td>Modelo</td><td>Versión concreta del LLM (pesos + capacidades)</td></tr>
+          <tr><td>Prompt</td><td>Lo que le escribes (instrucción + contexto)</td></tr>
+          <tr><td>Contexto / ventana</td><td>Cantidad de texto que el modelo puede ver a la vez</td></tr>
+          <tr><td>Token</td><td>Unidad de texto que el modelo procesa (aprox. trozos de palabra)</td></tr>
+          <tr><td>Alucinación</td><td>Respuesta inventada presentada como si fuera cierta</td></tr>
+          <tr><td>IDE con IA</td><td>Editor que integra el modelo en el flujo de desarrollo</td></tr>
+          <tr><td>Agente</td><td>LLM que usa herramientas en un bucle de pasos</td></tr>
+          <tr><td>AGENTS.md</td><td>Manual estable del proyecto para el agente</td></tr>
+          <tr><td>memory.md</td><td>Notas persistentes de decisiones y lecciones</td></tr>
+          <tr><td>Skill / playbook</td><td>Procedimiento bajo demanda para una tarea concreta</td></tr>
+          <tr><td>RAG</td><td>Recuperar documentos relevantes y meterlos en el prompt</td></tr>
+          <tr><td>MCP / tools</td><td>Formas de conectar sistemas externos al agente</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="footer">
+      <p>
+        Documento genérico: aplica a Cursor, Copilot, Gemini, ChatGPT, Claude y similares.
+        Adapta nombres de archivos a lo que tu herramienta soporte
+        (<code class="i">AGENTS.md</code>, instructions, rules, Memory, etc.).
+      </p>
+      <p>
+        Archivo: <code class="i">marco-referencia-agentes-llm.html</code>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
