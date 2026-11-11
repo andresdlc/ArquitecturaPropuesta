@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marco de referencia — Sistemas de agentes basados en LLM</title>
+  <style>
+    :root {
+      --bg: #f4f4f2;
+      --surface: #ffffff;
+      --text: #141414;
+      --muted: #525252;
+      --border: #e0e0dc;
+      --accent: #1a5f4a;
+      --accent-soft: #e6f2ed;
+      --code: #f0f0ec;
+      --line: #d4d4d0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.55;
+      font-size: 15.5px;
+    }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 36px 20px 80px; }
+    .meta {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-size: 2rem;
+      line-height: 1.2;
+      font-weight: 600;
+      margin: 0 0 12px;
+    }
+    h2 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    h3 {
+      font-size: 0.95rem;
+      font-weight: 650;
+      margin: 18px 0 8px;
+    }
+    .lead {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin: 0 0 28px;
+      max-width: 62ch;
+    }
+    .toc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      margin-bottom: 28px;
+    }
+    .toc h3 { margin-top: 0; }
+    .toc ol { margin: 8px 0 0; padding-left: 20px; }
+    .toc li { margin: 4px 0; }
+    .toc a { color: var(--accent); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px 24px 20px;
+      margin-bottom: 16px;
+    }
+    .num {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 650;
+      margin-bottom: 6px;
+    }
+    p { margin: 0 0 12px; }
+    ul, ol { margin: 0 0 12px; padding-left: 20px; }
+    li { margin: 4px 0; }
+    .muted { color: var(--muted); font-size: 0.92rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 4px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 9px 11px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: var(--code);
+      font-weight: 650;
+      font-size: 0.82rem;
+      letter-spacing: 0.02em;
+    }
+    tr:nth-child(even) td { background: #fafaf8; }
+    .note {
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      padding: 12px 14px;
+      margin: 14px 0 4px;
+      font-size: 0.92rem;
+    }
+    .note strong { display: block; margin-bottom: 4px; font-size: 0.8rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .panel {
+      border: 1px solid var(--border);
+      padding: 14px;
+      background: #fafaf8;
+    }
+    .panel h4 {
+      margin: 0 0 8px;
+      font-size: 0.9rem;
+      font-weight: 650;
+    }
+    .panel p, .panel ul { margin: 0; font-size: 0.88rem; color: var(--muted); }
+    .panel ul { padding-left: 16px; margin-top: 6px; }
+    pre, code {
+      font-family: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+    }
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+      white-space: pre-wrap;
+      line-height: 1.45;
+    }
+    code.i {
+      background: var(--code);
+      padding: 1px 5px;
+      border: 1px solid var(--border);
+      font-size: 0.85em;
+    }
+    .arch {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      background: var(--code);
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin: 12px 0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .footer {
+      margin-top: 36px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+    @media (max-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      h1 { font-size: 1.55rem; }
+      .wrap { padding: 24px 14px 60px; }
+    }
+    @media print {
+      body { background: #fff; }
+      .section, .toc { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="meta">Referencia arquitectónica · v1.0</div>
+    <h1>Marco de referencia para sistemas de agentes basados en LLM</h1>
+    <p class="lead">
+      Define el vocabulario, las capas y los artefactos de control necesarios para operar
+      agentes de lenguaje en entornos de desarrollo y automatización, con independencia
+      del proveedor de inferencia o del cliente de ejecución.
+    </p>
+
+    <nav class="toc" aria-label="Índice">
+      <h3>Contenido</h3>
+      <ol>
+        <li><a href="#alcance">Alcance y principios</a></li>
+        <li><a href="#llm">Modelos de lenguaje (LLM)</a></li>
+        <li><a href="#modelo">Modelo, endpoint e instancia</a></li>
+        <li><a href="#aprendizaje">Aprendizaje, adaptación y límites</a></li>
+        <li><a href="#estocasticidad">Estocasticidad de la generación</a></li>
+        <li><a href="#entorno">Entorno de ejecución (IDE / runtime)</a></li>
+        <li><a href="#agente">Arquitectura de agente</a></li>
+        <li><a href="#agents-md">AGENTS.md — política del sistema</a></li>
+        <li><a href="#memory-md">memory.md — estado persistente</a></li>
+        <li><a href="#capas">Mapa de capas del marco</a></li>
+        <li><a href="#operacion">Modelo operativo</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+      </ol>
+    </nav>
+
+    <section class="section" id="alcance">
+      <div class="num">01 · Alcance</div>
+      <h2>Alcance y principios</h2>
+      <p>
+        Este marco describe la <strong>arquitectura lógica</strong> de un sistema que combina
+        un modelo de lenguaje con instrucciones, memoria, herramientas y controles.
+        Es portable entre runtimes: editores con agente integrado, asistentes en CI,
+        bots en mensajería o servicios HTTP propios.
+      </p>
+      <div class="grid-2">
+        <div class="panel">
+          <h4>Incluye</h4>
+          <ul>
+            <li>Semántica de LLM, contexto y agente</li>
+            <li>Artefactos AGENTS.md y memory.md</li>
+            <li>Separación de capas y responsabilidades</li>
+            <li>Criterios de estabilización y gobernanza</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h4>Excluye</h4>
+          <ul>
+            <li>Benchmarking de proveedores</li>
+            <li>Diseño de fine-tuning / RLHF</li>
+            <li>Implementación específica de un SDK</li>
+            <li>Políticas legales o de compliance locales</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Principio rector</strong>
+        El valor del sistema no reside solo en el modelo, sino en la calidad del contexto
+        inyectado, la delimitación de herramientas y la persistencia controlada de estado.
+      </div>
+    </section>
+
+    <section class="section" id="llm">
+      <div class="num">02 · Fundamentos</div>
+      <h2>Modelos de lenguaje (LLM)</h2>
+      <p>
+        Un <strong>Large Language Model</strong> es una red neuronal entrenada para modelar
+        la distribución condicional de tokens: dada una secuencia de entrada (prompt + contexto),
+        estima la probabilidad del siguiente token y genera salida de forma autoregresiva.
+      </p>
+      <p>
+        Operacionalmente, el LLM actúa como un <em>motor de transformación de contexto</em>:
+        consume texto estructurado (instrucciones, evidencia, historial, esquemas de tools)
+        y produce texto accionable (respuestas, planes, llamadas a herramientas, parches).
+      </p>
+      <h3>Propiedades relevantes para ingeniería</h3>
+      <table>
+        <thead>
+          <tr><th>Propiedad</th><th>Implicación</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Condicionalidad al prompt</td>
+            <td>La calidad de salida es función directa del contexto suministrado.</td>
+          </tr>
+          <tr>
+            <td>Ventana de contexto finita</td>
+            <td>Existe un presupuesto de tokens; el exceso se trunca o se compacta.</td>
+          </tr>
+          <tr>
+            <td>No determinismo controlable</td>
+            <td>Parámetros de muestreo (temperature, top-p) alteran la distribución de salida.</td>
+          </tr>
+          <tr>
+            <td>Conocimiento paramétrico estático</td>
+            <td>Lo aprendido en preentrenamiento no se actualiza por una conversación aislada.</td>
+          </tr>
+          <tr>
+            <td>Riesgo de alucinación</td>
+            <td>Puede generar afirmaciones plausibles sin anclaje factual verificable.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="modelo">
+      <div class="num">03 · Identidad del modelo</div>
+      <h2>Modelo, endpoint e instancia</h2>
+      <p>
+        Conviene separar tres niveles que suelen confundirse en operación:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Nivel</th><th>Definición</th><th>Control operativo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Familia / checkpoint</td>
+            <td>Pesos y arquitectura (p. ej. una generación de un proveedor)</td>
+            <td>Selección de capacidad, latencia y costo</td>
+          </tr>
+          <tr>
+            <td>Endpoint / deployment</td>
+            <td>Servicio de inferencia con límites, región y cuenta</td>
+            <td>Cuotas, SLA, residencia de datos</td>
+          </tr>
+          <tr>
+            <td>Instancia de runtime</td>
+            <td>Sesión concreta: system prompt, tools habilitadas, política de temperatura</td>
+            <td>Comportamiento reproducible del agente</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="muted">
+        Cambiar de checkpoint sin cambiar AGENTS.md/memory/tools produce un sistema distinto
+        con la misma “caja” de producto. El marco trata el modelo como componente sustituible.
+      </p>
+    </section>
+
+    <section class="section" id="aprendizaje">
+      <div class="num">04 · Aprendizaje</div>
+      <h2>Aprendizaje, adaptación y límites</h2>
+      <p>
+        “Aprendizaje” en sistemas LLM en producción no es un único mecanismo.
+        Existen capas con cadencias y garantías distintas:
+      </p>
+      <h3>1. Preentrenamiento y alineación (offline)</h3>
+      <p>
+        Optimización de pesos sobre corpora masivos e instrucciones curadas (SFT, preference
+        optimization, etc.). Define capacidades generales. No ocurre en el turno del usuario;
+        es un proceso industrial del proveedor o del equipo que entrena el modelo.
+      </p>
+      <h3>2. Adaptación en contexto (in-context learning)</h3>
+      <p>
+        El modelo condiciona su salida a evidencia presente en la ventana: ejemplos few-shot,
+        fragmentos de código, políticas, resultados de tools. Es la forma dominante de
+        “personalización” en runtime. Es efímera: desaparece al truncar o cerrar la sesión
+        si no se persiste fuera del modelo.
+      </p>
+      <h3>3. Adaptación persistente (artefactos externos)</h3>
+      <p>
+        Instrucciones versionadas (<code class="i">AGENTS.md</code>), memoria operativa
+        (<code class="i">memory.md</code>), índices RAG, evaluadores y hooks. El sistema
+        “aprende” a escala de organización porque el contexto se reconstruye de forma
+        determinista en cada sesión.
+      </p>
+      <div class="note">
+        <strong>Separación crítica</strong>
+        No confundir actualización de pesos (entrenamiento) con actualización de contexto
+        (operación). La mayoría de las mejoras de calidad en ingeniería de agentes
+        provienen de la segunda.
+      </div>
+    </section>
+
+    <section class="section" id="estocasticidad">
+      <div class="num">05 · No determinismo</div>
+      <h2>Estocasticidad de la generación</h2>
+      <p>
+        Dada una entrada aparentemente idéntica, las salidas pueden divergir. Las causas
+        son estructurales, no anecdóticas:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Fuente de varianza</th><th>Mecanismo</th><th>Mitigación</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Muestreo</td>
+            <td>Temperature / top-p / seeds no fijados</td>
+            <td>Bajar temperatura; fijar seed si el API lo permite; pedir salidas estructuradas</td>
+          </tr>
+          <tr>
+            <td>Contexto no idéntico</td>
+            <td>Historial, archivos abiertos, compactación, orden de tools</td>
+            <td>Snapshots de contexto; prompts canónicos; aislamiento de sesión</td>
+          </tr>
+          <tr>
+            <td>Cambio de checkpoint</td>
+            <td>Routing automático a otro modelo o versión</td>
+            <td>Pinning explícito de modelo en config</td>
+          </tr>
+          <tr>
+            <td>Ambigüedad semántica</td>
+            <td>Especificación incompleta ? múltiples soluciones válidas</td>
+            <td>Contratos de salida, acceptance criteria, ejemplos gold</td>
+          </tr>
+          <tr>
+            <td>Herramientas no idempotentes</td>
+            <td>Búsqueda, APIs, estado del repo</td>
+            <td>Fixtures; captura de evidencia; deduplicación de side-effects</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Para tareas críticas (seguridad, migraciones, contratos financieros), el marco
+        exige <strong>verificación externa</strong>: tests, typecheck, revisores humanos
+        o agentes de verificación con brief fijo. La generación no es la fuente de verdad.
+      </p>
+    </section>
+
+    <section class="section" id="entorno">
+      <div class="num">06 · Runtime</div>
+      <h2>Entorno de ejecución (IDE / runtime)</h2>
+      <p>
+        El entorno de trabajo con IA es el <strong>runtime</strong> que orquesta:
+        sesión, inyección de contexto, autorización de tools, sandbox y UI de revisión.
+        Puede materializarse como IDE, CLI, servicio cloud o bot.
+      </p>
+      <div class="arch">???????????????????????????????????????????????????????????
+?  Runtime (IDE / CLI / host)                             ?
+?  · sesión · UI · permisos · sandbox · telemetría        ?
+???????????????????????????????????????????????????????????
+?  Orquestador de agente                                  ?
+?  · plan ? act ? observe · límites de turno              ?
+???????????????????????????????????????????????????????????
+?  Modelo LLM  ?  Artefactos de       ?  Tools / MCP      ?
+?  (inferencia)?  política + memoria  ?  filesystem, shell?
+???????????????????????????????????????????????????????????</div>
+      <p class="muted">
+        El runtime no sustituye la disciplina de artefactos. Sin política y memoria
+        explícitas, cada sesión reinicia el sistema en estado desconocido.
+      </p>
+    </section>
+
+    <section class="section" id="agente">
+      <div class="num">07 · Agente</div>
+      <h2>Arquitectura de agente</h2>
+      <p>
+        Un <strong>agente</strong> es un bucle controlado sobre un LLM con capacidad de
+        invocar herramientas y reincorporar observaciones al contexto hasta satisfacer
+        un criterio de terminación (éxito, presupuesto agotado, bloqueo de política).
+      </p>
+      <h3>Ciclo canónico</h3>
+      <ol>
+        <li><strong>Compose</strong> — ensamblar system/policy + memoria + objetivo + evidencia.</li>
+        <li><strong>Infer</strong> — el modelo produce plan, texto o tool-call.</li>
+        <li><strong>Execute</strong> — el runtime ejecuta tools bajo permisos.</li>
+        <li><strong>Observe</strong> — resultados (stdout, diffs, errores) vuelven al contexto.</li>
+        <li><strong>Decide</strong> — continuar, pedir clarificación, o terminar.</li>
+      </ol>
+      <div class="grid-2">
+        <div class="panel">
+          <h4>Responsabilidades del modelo</h4>
+          <ul>
+            <li>Clasificación y planificación</li>
+            <li>Síntesis y redacción</li>
+            <li>Selección de tools</li>
+            <li>Propuesta de cambios</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h4>Responsabilidades del runtime / código</h4>
+          <ul>
+            <li>AuthN/AuthZ y secretos</li>
+            <li>Idempotencia y dedupe</li>
+            <li>Límites duros (red, FS, red)</li>
+            <li>Persistencia de estado</li>
+          </ul>
+        </div>
+      </div>
+      <div class="note">
+        <strong>Regla de diseño</strong>
+        Lo no seguro de repetir o de errar no debe depender solo del juicio del modelo.
+        Debe vivir en código, policies o hooks.
+      </div>
+    </section>
+
+    <section class="section" id="agents-md">
+      <div class="num">08 · Política</div>
+      <h2>AGENTS.md — política del sistema</h2>
+      <p>
+        <code class="i">AGENTS.md</code> es el artefacto versionado que define la
+        <strong>política operativa estable</strong> del agente respecto a un repositorio
+        o dominio. Equivale, en otros runtimes, a project instructions, rules always-on
+        o system prompts de producto; el nombre canónico de este marco es AGENTS.md.
+      </p>
+      <h3>Contrato de contenido</h3>
+      <table>
+        <thead>
+          <tr><th>Sección</th><th>Propósito</th><th>Criterio de calidad</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Objetivos y no-objetivos</td>
+            <td>Delimitar el mandato del agente</td>
+            <td>Explícito; sin ambigüedad de alcance</td>
+          </tr>
+          <tr>
+            <td>Comandos canónicos</td>
+            <td>Build, test, lint, deploy locales</td>
+            <td>Copiables; un camino oficial por acción</td>
+          </tr>
+          <tr>
+            <td>Arquitectura</td>
+            <td>Límites de módulos y ownership</td>
+            <td>Punteros a paths canónicos, no essays</td>
+          </tr>
+          <tr>
+            <td>Estilo y invariantes</td>
+            <td>Convenciones no cubiertas por linter</td>
+            <td>Corto; complementa tooling, no lo reemplaza</td>
+          </tr>
+          <tr>
+            <td>Guardrails</td>
+            <td>Paths prohibidos, datos sensibles, acciones de riesgo</td>
+            <td>Machine-actionable cuando sea posible</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre># AGENTS.md
+
+## Mandato
+- Implementar cambios en este monorepo siguiendo los contratos de /packages/api.
+- No modificar /infra/prod sin aprobación explícita en el prompt.
+
+## Comandos
+- test: pnpm -w test
+- typecheck: pnpm -w typecheck
+- e2e: pnpm --filter web e2e
+
+## Invariantes
+- Domain logic en packages/domain; adapters en packages/adapters
+- Errores de API tipados; no strings mágicos en boundaries
+
+## Guardrails
+- Prohibido commit de .env*, secretos o dumps
+- No ejecutar migrate en producción desde el agente</pre>
+      <p class="muted">
+        AGENTS.md anidados por subdirectorio permiten especialización; la política más
+        específica al path de trabajo prevalece en caso de conflicto.
+      </p>
+    </section>
+
+    <section class="section" id="memory-md">
+      <div class="num">09 · Estado</div>
+      <h2>memory.md — estado persistente</h2>
+      <p>
+        <code class="i">memory.md</code> representa el <strong>estado operativo acumulado</strong>
+        que debe sobrevivir entre sesiones: decisiones, hallazgos, preferencias de trabajo
+        y trampas conocidas. Complementa a AGENTS.md; no lo duplica.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Dimensión</th><th>AGENTS.md</th><th>memory.md</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Semántica</td>
+            <td>Política estable del sistema</td>
+            <td>Estado y aprendizaje operativo</td>
+          </tr>
+          <tr>
+            <td>Cadencia de cambio</td>
+            <td>Baja (PR consciente)</td>
+            <td>Alta (append / compactación)</td>
+          </tr>
+          <tr>
+            <td>Audiencia</td>
+            <td>Todo el equipo / todo agente</td>
+            <td>Sesiones posteriores del dominio</td>
+          </tr>
+          <tr>
+            <td>Fallo si falta</td>
+            <td>Inconsistencia de estilo y proceso</td>
+            <td>Re-descubrimiento costoso; regresiones de criterio</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre># memory.md
+
+## Decisiones
+- 2026-03-18 · Auth: JWT en cookie httpOnly; refresh rotativo
+- 2026-03-22 · Checkout: idempotency-key obligatoria en POST /payments
+
+## Incidentes / trampas
+- payments 500 si falta header X-Tenant-Id en staging
+- regenerar Prisma sin revisar migrations rompe shadow DB
+
+## Preferencias de interacción
+- Diffs pequeños y revisables; no reescrituras masivas no solicitadas
+- Idioma de respuestas: español técnico
+
+## Estado de trabajo
+- WIP: migración checkout v2 (rama feat/checkout-v2)
+- Bloqueado: e2e flaky en safari — issue #842</pre>
+      <h3>Gobernanza de memoria</h3>
+      <ul>
+        <li>Prohibido persistir secretos, PII o tokens.</li>
+        <li>Toda entrada debe ser falsable o fechable; las obsoletas se archivan o eliminan.</li>
+        <li>Cuando el archivo crezca, compactar a un resumen con punteros a issues/PRs.</li>
+        <li>Si el runtime ofrece Memory UI o store KV, aplicar el mismo contrato semántico.</li>
+      </ul>
+    </section>
+
+    <section class="section" id="capas">
+      <div class="num">10 · Capas</div>
+      <h2>Mapa de capas del marco</h2>
+      <table>
+        <thead>
+          <tr><th>Capa</th><th>Pregunta de diseño</th><th>Artefacto típico</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Inferencia</td>
+            <td>¿Qué capacidad de razonamiento/costo?</td>
+            <td>Checkpoint + endpoint pinneado</td>
+          </tr>
+          <tr>
+            <td>Política</td>
+            <td>¿Qué es siempre cierto aquí?</td>
+            <td>AGENTS.md / rules always-on</td>
+          </tr>
+          <tr>
+            <td>Estado</td>
+            <td>¿Qué debe recordarse entre sesiones?</td>
+            <td>memory.md / KV / Memory store</td>
+          </tr>
+          <tr>
+            <td>Procedimientos</td>
+            <td>¿Cómo se ejecuta un workflow concreto?</td>
+            <td>Skills / playbooks / prompts versionados</td>
+          </tr>
+          <tr>
+            <td>Capacidades</td>
+            <td>¿Qué side-effects puede producir?</td>
+            <td>Tools tipadas, MCP, CLIs</td>
+          </tr>
+          <tr>
+            <td>Conocimiento</td>
+            <td>¿Cómo se ancla a evidencia externa?</td>
+            <td>RAG, índices, fetch de docs/tickets</td>
+          </tr>
+          <tr>
+            <td>Control</td>
+            <td>¿Quién puede bloquear o auditar?</td>
+            <td>Hooks, permisos, revisión humana, evals</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note">
+        <strong>Anti-patrón</strong>
+        Empujar todo al system prompt. Infla tokens, reduce señal y mezcla política
+        con estado efímero. Separar capas.
+      </div>
+    </section>
+
+    <section class="section" id="operacion">
+      <div class="num">11 · Operación</div>
+      <h2>Modelo operativo</h2>
+      <ol>
+        <li>
+          <strong>Baseline de política</strong> — publicar AGENTS.md mínimo (comandos,
+          invariantes, guardrails) en el repo.
+        </li>
+        <li>
+          <strong>Pinning de modelo</strong> — fijar checkpoint para tareas críticas;
+          documentar excepciones.
+        </li>
+        <li>
+          <strong>Memoria operativa</strong> — introducir memory.md (o store equivalente)
+          con esquema de secciones y reglas de higiene.
+        </li>
+        <li>
+          <strong>Procedimientos reutilizables</strong> — extraer workflows recurrentes
+          a skills/playbooks invocable bajo demanda.
+        </li>
+        <li>
+          <strong>Surface de tools mínima</strong> — habilitar solo capacidades necesarias;
+          denegar por defecto lo destructivo.
+        </li>
+        <li>
+          <strong>Verificación</strong> — tests/typecheck como gate; evals de regresión
+          para prompts críticos.
+        </li>
+        <li>
+          <strong>Observabilidad</strong> — registrar tool-calls, costos y fallos de política;
+          no registrar secretos.
+        </li>
+      </ol>
+      <div class="note">
+        <strong>Criterio de madurez</strong>
+        Un sistema es maduro cuando un cambio de proveedor de LLM no obliga a reescribir
+        el proceso de trabajo: solo se re-valida el pinning y las evals.
+      </div>
+    </section>
+
+    <section class="section" id="glosario">
+      <div class="num">12 · Glosario</div>
+      <h2>Glosario</h2>
+      <table>
+        <thead>
+          <tr><th>Término</th><th>Definición</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>LLM</td><td>Modelo probabilístico autoregresivo sobre tokens de lenguaje</td></tr>
+          <tr><td>Checkpoint</td><td>Conjunto de pesos versionado de un modelo</td></tr>
+          <tr><td>Contexto / ventana</td><td>Presupuesto de tokens visibles en un turno de inferencia</td></tr>
+          <tr><td>Token</td><td>Unidad de segmentación textual usada por el tokenizer del modelo</td></tr>
+          <tr><td>In-context learning</td><td>Adaptación del comportamiento vía evidencia en el prompt</td></tr>
+          <tr><td>Alucinación</td><td>Contenido no fundamentado presentado como factual</td></tr>
+          <tr><td>Runtime</td><td>Entorno que orquesta sesión, tools, permisos y UI</td></tr>
+          <tr><td>Agente</td><td>Bucle plan–act–observe sobre un LLM con tools</td></tr>
+          <tr><td>Tool-call</td><td>Invocación estructurada de una capacidad externa al modelo</td></tr>
+          <tr><td>AGENTS.md</td><td>Política estable versionada del dominio/repo</td></tr>
+          <tr><td>memory.md</td><td>Estado operativo persistente entre sesiones</td></tr>
+          <tr><td>Skill / playbook</td><td>Procedimiento bajo demanda para un workflow</td></tr>
+          <tr><td>RAG</td><td>Recuperación de evidencia externa inyectada al contexto</td></tr>
+          <tr><td>Hook</td><td>Interceptor del ciclo de vida para observación o bloqueo</td></tr>
+          <tr><td>Eval</td><td>Caso de prueba reproducible del comportamiento del agente</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="footer">
+      <p>
+        Marco de referencia · Sistemas de agentes basados en LLM · Artefacto portable entre runtimes<br />
+        Archivo: <code class="i">marco-referencia-agentes-llm.html</code>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
